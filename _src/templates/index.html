@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>Módulo 2</title>
+  <link rel="icon" href="favicon.png"/>
+	<link rel="stylesheet" href="./assets/css/main.css">
+</head>
+<body>
+ <header>
+   <h1 class="title">Encuentra la pareja</h1>
+ </header>
+ <main class="game__table">
+   <nav class="game__menu">
+    <form class="game__difficulty">
+      <select name="difficulty" class="game__difficulty-option">
+        <option value="4">Fácil</option>
+        <option value="6">Normal</option>
+        <option value="8">Díficil</option>
+      </select>
+      <button type="submit" class="game__btn">empezar</button>
+    </form>
+   </nav>
+  <section class="card__wrapper">
+    <ul class="card__list"></ul>
+  </section>
+</main>
+<div class="game__win">
+  <h2 class="game__win-text">Has ganado!</h2>
+</div>
+<script src="./assets/js/main.js"></script>
+</body>
+</html>
