@@ -7,7 +7,6 @@ const gameSuccess = document.querySelector('.game__win');
 
 let cardsResults = [];
 let userSelected = [];
-let success = 0;
 
 const checkLenght = (arr) =>{
   return arr.length === 2;
@@ -35,44 +34,75 @@ const getDatafromAPI = ()=> {
 const showPoke = (ev) => {
     const selectedCard = ev.target;
     let blockCard = selectedCard.parentElement;
-    selectedCard.style.animation = "flippedCard 2s ease 1 forwards";
-    selectedCard.nextSibling.style.animation = "flippedCard 2s ease 1.3s reverse 1 forwards";
+    selectedCard.style.animation = "flippedCard 1s ease 1 forwards";
+    selectedCard.nextSibling.style.animation = "flippedCard 1.2s ease 0.5s reverse 1 forwards";
+    blockCard.classList.add('js-blocked');
+    blockCard.classList.add('js-workcard');
     blockCard.removeEventListener('click', showPoke);
     //blockCard.addEventListener('click', hiddenCard);
-    blockCard.classList.add('js-blocked');
     getPair(blockCard);
     checkUserFavorites();
     //If true clean user favorites
 }
+//let blockedCards = document.querySelectorAll('.js-blocked');
 
 const hiddenCard = () =>{
-    let blockedCards = document.querySelectorAll('.js-blocked');
-    for (let item=0; item < blockedCards.length; item++){
-        blockedCards[item].firstChild.style.animation = "flippedCard 2s ease 1.3s reverse 1 forwards";
-        blockedCards[item].lastChild.style.animation = "flippedCard 2s ease 1 forwards";
-        blockedCards[item].addEventListener('click', showPoke);
-    };
-
+    let pokeCards = document.querySelectorAll('.js-workcard')
+    for( let i=0; i<pokeCards.length; i++){
+    pokeCards[i].firstChild.style.animation = "";
+    pokeCards[i].lastChild.style.animation = ""
+    pokeCards[i].addEventListener('click', showPoke);
+    }
+    removeAnimationClass();
+    removeWorkClass();
 }
 
-const checkSucces = (counter) =>{
-    if (counter === (parseInt(gameDifficulty.value))/2){
+const removeWorkClass = () =>{
+    let cards = document.querySelectorAll('.js-defaultcard');
+    for (let i=0;i<cards.length;i++){
+        cards[i].classList.remove('js-workcard');
+    }
+}
+const removeAnimationClass = () =>{
+    let cards = document.querySelectorAll('.js-defaultcard');
+    for (let i=0;i<cards.length;i++){
+        if (cards[i].classList.contains('js-workcard')){
+            cards[i].classList.remove('js-blocked');
+        }
+    }
+}
+
+const checkSucces = () =>{
+    let pokeCards = document.querySelectorAll('.js-blocked');
+    if (pokeCards.length === parseInt(gameDifficulty.value)){
         gameSuccess.classList.add('active');
         console.log("Has ganado");
     }
 }
+
+const addWinClass = () =>{
+    let hintCard = document.querySelectorAll('.js-blocked');
+    for (let hint of hintCard){
+        hint.classList.add('correct');
+        hint.classList.remove('js-workcard');
+    }
+}
+
 let checkUserFavorites = () =>{
     let check = checkLenght(userSelected);
     if (check === true){
        let partialUserData = userSelected.splice(1);
         if (partialUserData[0] === userSelected[0]){
             userSelected = [];
-            success++;
-            checkSucces(success);
+            addWinClass();
+            checkSucces();
             console.log("Pareja. Pintar clases")
         } else {
             userSelected= [];
-            setTimeout(hiddenCard, 3);
+            window.setTimeout(hiddenCard(), 10000);
+            //Remove classes
+            //let pokeCards = document.querySelectorAll('.js-defaultcard');
+            //pokeCards.classList.remove('.js-blocked')
             console.log("No son pareja. Dar la vuelta tras 5 segundos");
         }
     }
@@ -94,6 +124,7 @@ const addListeners = () =>{
         card.addEventListener('click', showPoke);
     }
 }
+
 const setPokemon = () =>{
     let cards = document.querySelectorAll('.js-defaultcard-poke');
     for (let i=0; i<cards.length;i++){
@@ -101,31 +132,31 @@ const setPokemon = () =>{
     }
 }
 
-const paintList = () =>{
-    const paintIt = () =>{
-        for (let i=0; i<cardsResults.length;i++){
-        const newCard = document.createElement('li');
-        const newCardImageFront = document.createElement('img');
-        const newCardImageBack = document.createElement('img');
-        newCardImageFront.classList.add('js-defaultcard-img');
-        newCardImageBack.classList.add('js-defaultcard-poke');
-        newCard.classList.add('js-defaultcard');
-        newCard.appendChild(newCardImageFront);
-        newCard.appendChild(newCardImageBack);
-        cardsList.appendChild(newCard);
-        newCard.dataset.index = [i];
-        }
+const paintIt = () =>{
+    for (let i=0; i<cardsResults.length;i++){
+    const newCard = document.createElement('li');
+    const newCardImageFront = document.createElement('img');
+    const newCardImageBack = document.createElement('img');
+    newCardImageFront.classList.add('js-defaultcard-img');
+    newCardImageBack.classList.add('js-defaultcard-poke');
+    newCard.classList.add('js-defaultcard');
+    newCard.appendChild(newCardImageFront);
+    newCard.appendChild(newCardImageBack);
+    cardsList.appendChild(newCard);
+    newCard.dataset.index = [i];
     }
-if (cardsList.children.length === 0){
-    paintIt ()
-    addListeners();
-    setPokemon();
-} else {
-    cardsList.innerHTML = "";
-    paintIt();
-    addListeners();
-    setPokemon();
 }
+const paintList = () =>{
+    if (cardsList.children.length === 0){
+        paintIt ()
+        addListeners();
+        setPokemon();
+    } else {
+        cardsList.innerHTML = "";
+        paintIt();
+        addListeners();
+        setPokemon();
+    }
 }
 
 const startGame = (ev) =>{
